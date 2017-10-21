@@ -2,18 +2,25 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-NSamples=100;
-dt = 0.1;
+env = 1;
+NSamples=1000;
+dt = 0.01;
 
-%% Ground Truth %%%%%%%%%%%%%%%%%%%%%%%
-s = train_constVel(NSamples,dt);
-
-%% System Model %%%%%%%%%%%%%%%%%%%%%%%
-d = model_train_constVel(s,dt);
+%% Ground Truth & Model %%%%%%%%%%%%%%%
+switch env
+    case 1
+        s = train_constVel(NSamples,dt);
+        d = model_train_constVel(s,dt);
+    case 2
+        s = train_constAcc(NSamples,dt);
+        d = model_train_constAcc(s,dt);
+    otherwise
+        error('Selected environment does not exist!');
+end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 % Buffers for later display
-Xk_buffer = zeros(2,NSamples+1);
+Xk_buffer = zeros(s.NState,NSamples+1);
 Xk_buffer(:,1) = d.Xk_prev;
 Z_buffer = zeros(1,NSamples+1);
 
@@ -21,7 +28,7 @@ for k=1:NSamples
     
     % Z is the measurement vector. In our
     % case, Z = TrueData + RandomGaussianNoise
-    Z = s.X(k+1,1)+d.sigma_meas*randn;
+    Z = s.Z(k);
     Z_buffer(k+1) = Z;
     
     % Kalman iteration
@@ -49,10 +56,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 figure;
-plot(s.t,s.X(:,1),'g');
+plot(s.t,s.X(:,1),'m');
 hold on;
 plot(s.t,Z_buffer,'c');
-plot(s.t,Xk_buffer(1,:),'m');
+plot(s.t,Xk_buffer(1,:),'k');
 title('Position estimation results');
 xlabel('Time (s)');
 ylabel('Position (m)');

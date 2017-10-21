@@ -6,10 +6,10 @@ function [s] = train_constVel(NSamples,dt)
 %       velocity];
 
     s.t=(0:dt:dt*NSamples)';
-    s.nState = 2;
+    s.NState = 2;
     
     % Initialise the state array
-    s.X = zeros(length(s.t),s.nState);
+    s.X = zeros(length(s.t),s.NState);
     % Velocity vector (state 2)
     s.X(:,2) = 10*ones(size(s.t));
     % Position vector (state 1)
@@ -17,7 +17,6 @@ function [s] = train_constVel(NSamples,dt)
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
     s.sigma_meas = 1; % 1 m/sec
-    rng(0);
     s.Z = s.X(:,1)+s.sigma_meas*randn(size(s.t));
 
 end
