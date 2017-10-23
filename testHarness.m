@@ -25,7 +25,7 @@ for k=2:NSamples+1
     % Compute the predicted covarians matrix, d.P1
     d.P1 = (d.F * d.P * d.F') + d.Q;
     
-    % Compute the predictd measurement, d.Y1
+    % Compute the predicted measurement, d.Y1
     d.Y1 = d.H * d.X1;
     % Compute the innovation covariance matrix, d.S
     S = (d.H * d.P1 * d.H') + d.R;
