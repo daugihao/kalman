@@ -5,6 +5,8 @@ function [s] = train_constVel(NSamples,dt)
 %s.X = [ position;
 %       velocity];
 
+    s.modelString = 'train_constVel';
+
     s.t=(0:dt:dt*NSamples);
     s.tString = 'Time (s)';
     

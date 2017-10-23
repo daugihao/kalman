@@ -1,11 +1,11 @@
-function [s] = train_constAcc(NSamples,dt)
-% TRAIN_CONSTACC Environment with three states (position, velocity and acceleration)
-% Model has a constant acceleration dynamic
+function [s] = train_nonLinear(NSamples,dt)
+% TRAIN_NONLINEAR Environment with three states (position, velocity and acceleration)
+% Model has a non-linear acceleration dynamic
 
 %s.X = [ position;
 %       velocity];
 
-    s.modelString = 'train_constAcc';
+    s.modelString = 'train_nonLinear';
 
     s.t=(0:dt:dt*NSamples);
     s.tString = 'Time (s)';
@@ -17,14 +17,19 @@ function [s] = train_constAcc(NSamples,dt)
     
     % Initialise the state array
     s.X = zeros(s.NState,length(s.t));
-    % Acceleration vector (state 3)
-    s.X(3,:) = 1.0*ones(size(s.t));
-    % Velocity vector (state 2)
-    s.X(2,:) = s.X(3,:).*s.t;
+    
     % Position vector (state 1)
-    s.X(1,1) = 0;
-    for i = 2:length(s.X(2,:))
-        s.X(1,i) = s.X(1,i-1) + s.X(2,i)*dt;
+    s.X(1,1) = 1;
+    % Velocity vector (state 2)
+    s.X(2,1) = 5;
+    % Acceleration vector (state 3)
+    s.X(3,1) = -sin(s.X(1,1));
+
+    syms x1 x2 x3
+    s.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
+    
+    for i = 2:NSamples+1
+        s.X(:,i) = subs(s.J,s.X(1,i-1))*s.X(:,i-1);
     end
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise

@@ -1,6 +1,8 @@
 function [d] = model_train_constAcc(s,dt)
 % MODEL_TRAIN_CONSTACC Model setup
 
+d.typeString = 'Linear KF';
+
 d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)

@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 3;
+env = 1;
 NSamples=100;
 dt = 0.1;
 
@@ -17,12 +17,18 @@ switch env
     case 3
         s = sprungBlocks(NSamples,dt);
         d = model_sprungBlocks(s,dt);
+    case 4
+        s = train_nonLinear(NSamples,dt);
+        d = model_train_nonLinear(s,dt);
     otherwise
         error('Selected environment does not exist!');
 end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 for k=2:NSamples+1
+    if strcmp(d.typeString,'Extended KF')
+        d.F = double(subs(d.J,d.X(1,k-1)));
+    end
     % Compute the predicted mean, d.X1
     d.X1 = d.F * d.X(:,k-1);
     % Compute the predicted covarians matrix, d.P1
@@ -51,4 +57,6 @@ for i = 1:s.NState
     xlabel(s.tString);
     ylabel(s.stateString{i});
     legend('True Value','Estimated Value');
+    t = title([s.modelString ': ' d.typeString]);
+    set(t, 'Interpreter', 'none');
 end

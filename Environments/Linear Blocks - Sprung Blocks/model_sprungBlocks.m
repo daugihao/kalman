@@ -1,6 +1,8 @@
 function [d] = model_sprungBlocks(s,dt)
 % MODEL_SPRUNGBLOCKS Model setup
 
+d.typeString = 'Linear KF';
+
 d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)

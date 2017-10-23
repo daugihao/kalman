@@ -8,6 +8,8 @@ function [s] = sprungBlocks(NSamples,dt)
 %       velocity_2;
 %       acceleration_2];
 
+    s.modelString = 'sprungBlocks';
+
     s.t=(0:dt:dt*NSamples);
     s.tString = 'Time (s)';
     
