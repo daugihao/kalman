@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 2;
+env = 1;
 NSamples=100;
 dt = 0.1;
 
@@ -20,16 +20,22 @@ end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 for k=2:NSamples+1
-    % Kalman iteration
+    % Compute the predicted mean, d.X1
+    d.X1 = d.F * d.X(:,k-1);
+    % Compute the predicted covarians matrix, d.P1
     d.P1 = (d.F * d.P * d.F') + d.Q;
+    
+    % Compute the predictd measurement, d.Y1
+    d.Y1 = d.H * d.X1;
+    % Compute the innovation covariance matrix, d.S
     S = (d.H * d.P1 * d.H') + d.R;
-    
-    % K is Kalman gain. If K is large, more weight goes to the measurement.
-    % If K is low, more weight goes to the model prediction.
+    % Compute the Kalman gain (K large -> more weight goes to measurement)
     K = (d.P1 * d.H' / S);
-    d.P = d.P1 - (K * d.H * d.P1);
     
-    d.X(:,k) = (d.F * d.X(:,k-1)) + (K * (s.Y(k) - (d.H * d.F * d.X(:,k-1))));
+    % Compute the posterior mean, d.X
+    d.X(:,k) = d.X1 + (K * (s.Y(k) - d.Y1));
+    % Compute the covariance matrix, d.P
+    d.P = d.P1 - (K * d.H * d.P1);
 end
 
 %% Plot resulting graphs %%%%%%%%%%%%%%
