@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
+env = 3;
 NSamples=100;
 dt = 0.1;
 
@@ -14,6 +14,9 @@ switch env
     case 2
         s = train_constAcc(NSamples,dt);
         d = model_train_constAcc(s,dt);
+    case 3
+        s = sprungBlocks(NSamples,dt);
+        d = model_sprungBlocks(s,dt);
     otherwise
         error('Selected environment does not exist!');
 end
