@@ -5,23 +5,28 @@ function [s] = train_constAcc(NSamples,dt)
 %s.X = [ position;
 %       velocity];
 
-    s.t=(0:dt:dt*NSamples)';
-    s.NState = 3;
+    s.t=(0:dt:dt*NSamples);
+    s.tString = 'Time (s)';
+    
+    s.stateString{1} = 'Position (m)';
+    s.stateString{2} = 'Velocity (m/s)';
+    s.stateString{3} = 'Acceleration (m/s^2)';
+    s.NState = length(s.stateString);
     
     % Initialise the state array
-    s.X = zeros(length(s.t),s.NState);
+    s.X = zeros(s.NState,length(s.t));
     % Acceleration vector (state 3)
-    s.X(:,3) = 1.0*ones(size(s.t));
+    s.X(3,:) = 1.0*ones(size(s.t));
     % Velocity vector (state 2)
-    s.X(:,2) = s.X(:,3).*s.t;
+    s.X(2,:) = s.X(3,:).*s.t;
     % Position vector (state 1)
     s.X(1,1) = 0;
-    for i = 2:length(s.X(:,2))
-        s.X(i,1) = s.X(i-1,1) + s.X(i,2)*dt;
+    for i = 2:length(s.X(2,:))
+        s.X(1,i) = s.X(1,i-1) + s.X(2,i)*dt;
     end
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
     s.sigma_meas = 1; % 1 m/sec
-    s.Y = s.X(:,1)+s.sigma_meas*randn(size(s.t));
+    s.Y = s.X(1,:)+s.sigma_meas*randn(size(s.t));
 
 end

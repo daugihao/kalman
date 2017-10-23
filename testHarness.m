@@ -19,8 +19,6 @@ switch env
 end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
-% Buffers for later display
-
 for k=2:NSamples+1
     % Kalman iteration
     d.P1 = (d.F * d.P * d.F') + d.Q;
@@ -35,36 +33,13 @@ for k=2:NSamples+1
 end
 
 %% Plot resulting graphs %%%%%%%%%%%%%%
-figure;
-plot(s.t,s.X(:,1),'m');
-hold on;
-plot(s.t,s.Y,'c');
-plot(s.t,d.X(1,:),'k');
-title('Position estimation results');
-xlabel('Time (s)');
-ylabel('Position (m)');
-legend('True position','Measurements','Kalman estimated displacement');
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Velocity analysis %%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% The instantaneous velocity as derived from 2 consecutive position
-% measurements
-InstantaneousVelocity = [0 (s.Y(2:NSamples+1)-s.Y(1:NSamples))'/dt];
-
-% The instantaneous velocity as derived from running average with a window
-% of 5 samples from instantaneous velocity
-WindowSize = 5;
-InstantaneousVelocityRunningAverage = filter(ones(1,WindowSize)/WindowSize,1,InstantaneousVelocity);
-
-figure;
-plot(s.t,s.X(:,2),'m');
-hold on;
-plot(s.t,InstantaneousVelocity,'g');
-plot(s.t,InstantaneousVelocityRunningAverage,'c');
-plot(s.t,d.X(2,:),'k');
-title('Velocity estimation results');
-xlabel('Time (s)');
-ylabel('Velocity (m/s)');
-legend('True velocity','Estimated velocity by raw consecutive samples','Estimated velocity by running average','Estimated velocity by Kalman filter');
+for i = 1:s.NState
+    figure;
+    plot(s.t,s.X(i,:),'m');
+    hold on; grid on;
+    plot(s.t,d.X(i,:),'k');
+    title(['Estimation Results: ' s.stateString{i}]);
+    xlabel(s.tString);
+    ylabel(s.stateString{i});
+    legend('True Value','Estimated Value');
+end
