@@ -2,9 +2,9 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
-NSamples=1000;
-dt = 0.01;
+env = 2;
+NSamples=100;
+dt = 0.1;
 
 %% Ground Truth & Model %%%%%%%%%%%%%%%
 switch env
@@ -20,46 +20,26 @@ end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 % Buffers for later display
-Xk_buffer = zeros(s.NState,NSamples+1);
-Xk_buffer(:,1) = d.Xk_prev;
-Z_buffer = zeros(1,NSamples+1);
 
-for k=1:NSamples
-    
-    % Z is the measurement vector. In our
-    % case, Z = TrueData + RandomGaussianNoise
-    Z = s.Z(k);
-    Z_buffer(k+1) = Z;
-    
+for k=2:NSamples+1
     % Kalman iteration
-    P1 = d.Phi*d.P*d.Phi' + d.Q;
-    S = d.M*P1*d.M' + d.R;
+    d.P1 = (d.F * d.P * d.F') + d.Q;
+    S = (d.H * d.P1 * d.H') + d.R;
     
     % K is Kalman gain. If K is large, more weight goes to the measurement.
     % If K is low, more weight goes to the model prediction.
-    K = P1*d.M'*inv(S);
-    d.P = P1 - K*d.M*P1;
+    K = (d.P1 * d.H' / S);
+    d.P = d.P1 - (K * d.H * d.P1);
     
-    Xk = d.Phi*d.Xk_prev + K*(Z-d.M*d.Phi*d.Xk_prev);
-    Xk_buffer(:,k+1) = Xk;
-    
-    % For the next iteration
-    d.Xk_prev = Xk; 
+    d.X(:,k) = (d.F * d.X(:,k-1)) + (K * (s.Y(k) - (d.H * d.F * d.X(:,k-1))));
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Plot resulting graphs %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Position analysis %%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% Plot resulting graphs %%%%%%%%%%%%%%
 figure;
 plot(s.t,s.X(:,1),'m');
 hold on;
-plot(s.t,Z_buffer,'c');
-plot(s.t,Xk_buffer(1,:),'k');
+plot(s.t,s.Y,'c');
+plot(s.t,d.X(1,:),'k');
 title('Position estimation results');
 xlabel('Time (s)');
 ylabel('Position (m)');
@@ -71,7 +51,7 @@ legend('True position','Measurements','Kalman estimated displacement');
 
 % The instantaneous velocity as derived from 2 consecutive position
 % measurements
-InstantaneousVelocity = [0 (Z_buffer(2:NSamples+1)-Z_buffer(1:NSamples))/dt];
+InstantaneousVelocity = [0 (s.Y(2:NSamples+1)-s.Y(1:NSamples))'/dt];
 
 % The instantaneous velocity as derived from running average with a window
 % of 5 samples from instantaneous velocity
@@ -83,7 +63,7 @@ plot(s.t,s.X(:,2),'m');
 hold on;
 plot(s.t,InstantaneousVelocity,'g');
 plot(s.t,InstantaneousVelocityRunningAverage,'c');
-plot(s.t,Xk_buffer(2,:),'k');
+plot(s.t,d.X(2,:),'k');
 title('Velocity estimation results');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');

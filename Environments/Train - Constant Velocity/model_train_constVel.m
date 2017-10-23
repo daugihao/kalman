@@ -1,17 +1,16 @@
 function [d] = model_train_constVel(s,dt)
 % MODEL_TRAIN_CONSTVEL Model setup
 
+d.X = zeros(s.NState,length(s.t));
+
 % Previous state (initial guess)
-d.Xk_prev = [0; 
+d.X(:,1) = [0; 
     0.5*s.X(1,2)];
 
-% Current state estimate
-d.X=[];
-
-% Motion equation: X = Phi*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
+% Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
-% Phi represents the dynamics of the system: it is the motion equation
-d.Phi = [1 dt;
+% F represents the dynamics of the system: it is the motion equation
+d.F = [1 dt;
        0  1];
 
 % The error matrix (or the confidence matrix): P states whether we should 
@@ -19,6 +18,7 @@ d.Phi = [1 dt;
 d.sigma_model = 1;
 d.P = [d.sigma_model^2             0;
                  0 d.sigma_model^2];
+d.P1 = zeros(size(d.P));
 
 % Q is the process noise covariance. It represents the amount of
 % uncertainty in the model. In our case, we arbitrarily assume that the model is perfect (no
@@ -26,10 +26,10 @@ d.P = [d.sigma_model^2             0;
 d.Q = [0 0;
      0 0];
 
-% M is the measurement matrix. 
-% We measure X, so M(1) = 1
-% We do not measure V, so M(2)= 0
-d.M = [1 0];
+% H is the measurement matrix. 
+% We measure X, so H(1) = 1
+% We do not measure V, so H(2)= 0
+d.H = [1 0];
 
 % R is the measurement noise covariance. Generally R and sigma_meas can
 % vary between samples. 

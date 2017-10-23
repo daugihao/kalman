@@ -17,6 +17,6 @@ function [s] = train_constVel(NSamples,dt)
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
     s.sigma_meas = 1; % 1 m/sec
-    s.Z = s.X(:,1)+s.sigma_meas*randn(size(s.t));
+    s.Y = s.X(:,1)+s.sigma_meas*randn(size(s.t));
 
 end
