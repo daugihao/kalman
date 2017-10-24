@@ -1,20 +1,21 @@
-function [d] = model_train_nonLinear(s,dt)
-% MODEL_TRAIN_NONLINEAR Model setup
+function [d] = model_train_constAccKF(s,dt)
+% MODEL_TRAIN_CONSTACC Model setup
 
-d.typeString = 'Extended KF';
+d.typeString = 'Linear KF';
 
 d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)
-d.X(:,1) = [1; 
-    5.5;
-    -sin(1)];
+d.X(:,1) = [0; 
+    0.5;
+    0];
 
 % Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
 % F represents the dynamics of the system: it is the motion equation
-syms x1 x2 x3
-d.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
+d.F = [1 dt 0;
+       0  1 dt;
+       0 0 1];
 
 % The error matrix (or the confidence matrix): P gives the confidence in
 % the initial estimate. A low value indicates that the initial state should
@@ -22,7 +23,7 @@ d.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
 % measurement).
 d.P = [1e-9 0 0;
        0 0.5^2 0;
-         0 0 1e-9];
+         0 0 1^2];
 d.P1 = zeros(size(d.P));
 
 

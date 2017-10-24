@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
+env = 5;
 NSamples=100;
 dt = 0.1;
 
@@ -10,41 +10,52 @@ dt = 0.1;
 switch env
     case 1
         s = train_constVel(NSamples,dt);
-        d = model_train_constVel(s,dt);
+        d = model_train_constVelKF(s,dt);
     case 2
         s = train_constAcc(NSamples,dt);
-        d = model_train_constAcc(s,dt);
+        d = model_train_constAccKF(s,dt);
     case 3
         s = sprungBlocks(NSamples,dt);
-        d = model_sprungBlocks(s,dt);
+        d = model_sprungBlocksKF(s,dt);
     case 4
         s = train_nonLinear(NSamples,dt);
-        d = model_train_nonLinear(s,dt);
+        d = model_train_nonLinearEKF(s,dt);
+    case 5
+        s = train_nonLinear(NSamples,dt);
+        d = model_train_nonLinearUKF(s,dt);
     otherwise
         error('Selected environment does not exist!');
 end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 for k=2:NSamples+1
-    if strcmp(d.typeString,'Extended KF')
-        d.F = double(subs(d.J,d.X(1,k-1)));
+    if strcmp(d.typeString,'Unscented KF')
+        %UKF prediction step
+        [d.X(:,k-1),d.P] = ukf_predict1(d.X(:,k-1),d.P,d.predModel,d.Q,d.f_param,d.alpha,d.beta,d.kappa);
+        %UKF update step
+        [d.X(:,k),d.P] = ukf_update1(d.X(:,k-1),d.P,s.Y(:,k),d.measModel,d.R,d.h_param,d.alpha,d.beta,d.kappa);
+    elseif strcmp(d.typeString,'Linear KF') || strcmp(d.typeString,'Extended KF')
+        if strcmp(d.typeString,'Extended KF')
+            % Compute the Jacobian to obtain the linearised state transition matrix
+            d.F = double(subs(d.J,d.X(1,k-1)));
+        end
+        % Compute the predicted mean, d.X1
+        d.X1 = d.F * d.X(:,k-1);
+        % Compute the predicted covariance matrix, d.P1
+        d.P1 = (d.F * d.P * d.F') + d.Q;
+
+        % Compute the predicted measurement, d.Y1
+        d.Y1 = d.H * d.X1;
+        % Compute the innovation covariance matrix, d.S
+        S = (d.H * d.P1 * d.H') + d.R;
+        % Compute the Kalman gain (K large -> more weight goes to measurement)
+        K = (d.P1 * d.H' / S);
+
+        % Compute the posterior mean, d.X
+        d.X(:,k) = d.X1 + (K * (s.Y(k) - d.Y1));
+        % Compute the covariance matrix, d.P
+        d.P = d.P1 - (K * d.H * d.P1);
     end
-    % Compute the predicted mean, d.X1
-    d.X1 = d.F * d.X(:,k-1);
-    % Compute the predicted covarians matrix, d.P1
-    d.P1 = (d.F * d.P * d.F') + d.Q;
-    
-    % Compute the predicted measurement, d.Y1
-    d.Y1 = d.H * d.X1;
-    % Compute the innovation covariance matrix, d.S
-    S = (d.H * d.P1 * d.H') + d.R;
-    % Compute the Kalman gain (K large -> more weight goes to measurement)
-    K = (d.P1 * d.H' / S);
-    
-    % Compute the posterior mean, d.X
-    d.X(:,k) = d.X1 + (K * (s.Y(k) - d.Y1));
-    % Compute the covariance matrix, d.P
-    d.P = d.P1 - (K * d.H * d.P1);
 end
 
 %% Plot resulting graphs %%%%%%%%%%%%%%
