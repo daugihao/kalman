@@ -7,8 +7,8 @@ d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)
 d.X(:,1) = [1; 
-    5.5;
-    -sin(1)];
+    5.0;
+    -cos(1)];
 
 % Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
@@ -20,9 +20,9 @@ d.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
 % the initial estimate. A low value indicates that the initial state should
 % be trusted (it represents the level of error associated with that
 % measurement).
-d.P = [1e-9 0 0;
-       0 0.5^2 0;
-         0 0 1e-9];
+d.P = [1e-6 0 0;
+       0 1e-6 0;
+         0 0 1e-6];
 d.P1 = zeros(size(d.P));
 
 

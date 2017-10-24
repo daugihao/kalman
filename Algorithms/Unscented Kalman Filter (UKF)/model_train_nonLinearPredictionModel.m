@@ -6,6 +6,6 @@ dt = params(1);
 
 y(1) = x(1) + x(2)*dt;
 y(2) = x(2) + x(3)*dt;
-y(3) = -sin(x(1));
+y(3) = -cos(x(1));
 
 end

@@ -23,7 +23,7 @@ function [s] = train_nonLinear(NSamples,dt)
     % Velocity vector (state 2)
     s.X(2,1) = 5;
     % Acceleration vector (state 3)
-    s.X(3,1) = -sin(s.X(1,1));
+    s.X(3,1) = -cos(s.X(1,1));
 
     syms x1 x2 x3
     s.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
