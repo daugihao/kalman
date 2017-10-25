@@ -20,9 +20,9 @@ d.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
 % the initial estimate. A low value indicates that the initial state should
 % be trusted (it represents the level of error associated with that
 % measurement).
-d.P = [1e-6 0 0;
-       0 1e-6 0;
-         0 0 1e-6];
+d.P = [1e-9 0 0;
+       0 1e-9 0;
+         0 0 1e-9];
 d.P1 = zeros(size(d.P));
 
 

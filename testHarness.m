@@ -1,10 +1,10 @@
-% close all
+close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 5;
+env = 4;
 NSamples=1000;
-dt = 0.001;
+dt = 0.01;
 
 %% Ground Truth & Model %%%%%%%%%%%%%%%
 switch env
@@ -31,9 +31,9 @@ end
 if strcmp(d.typeString,'Unscented KF')
     d.Xpred = zeros(size(d.X));
     for k=2:NSamples+1
-        %UKF prediction step
+        % UKF prediction step
         [d.Xpred(:,k),d.P] = ukf_predict1(d.X(:,k-1),d.P,d.predModel,d.Q,d.f_param,d.alpha,d.beta,d.kappa);
-        %UKF update step
+        % UKF update step
         [d.X(:,k),d.P] = ukf_update1(d.Xpred(:,k),d.P,s.Y(:,k),d.measModel,d.R,d.h_param,d.alpha,d.beta,d.kappa);
     end
 elseif strcmp(d.typeString,'Extended KF')
@@ -60,9 +60,6 @@ elseif strcmp(d.typeString,'Extended KF')
     end
 elseif strcmp(d.typeString,'Linear KF')
     for k=2:NSamples+1
-        % Compute the Jacobian to obtain the linearised state transition matrix
-        d.F = double(subs(d.J,d.X(1,k-1)));
-        
         % Compute the predicted mean, d.X1
         d.X1 = d.F * d.X(:,k-1);
         % Compute the predicted covariance matrix, d.P1

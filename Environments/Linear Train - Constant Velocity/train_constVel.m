@@ -22,7 +22,7 @@ function [s] = train_constVel(NSamples,dt)
     s.X(1,:) = s.X(2,:).*s.t;
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
-    s.sigma_meas = 1; % 1 m/sec
+    s.sigma_meas = 1;
     s.Y = s.X(1,:)+s.sigma_meas*randn(size(s.t));
 
 end

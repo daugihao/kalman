@@ -8,7 +8,7 @@ d.X = zeros(s.NState,length(s.t));
 % Previous state (initial guess)
 d.X(:,1) = [0; 
     0.5;
-    0];
+    1.1];
 
 % Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
@@ -23,7 +23,7 @@ d.F = [1 dt 0;
 % measurement).
 d.P = [1e-9 0 0;
        0 0.5^2 0;
-         0 0 1^2];
+         0 0 0.1^2];
 d.P1 = zeros(size(d.P));
 
 
