@@ -27,7 +27,7 @@ function [s] = train_constAcc(NSamples,dt)
         s.X(1,i) = s.X(1,i-1) + s.X(2,i)*dt;
     end
 
-    % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
+    % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0];
     [s.NStateOut, ~] = size(s.H);
     

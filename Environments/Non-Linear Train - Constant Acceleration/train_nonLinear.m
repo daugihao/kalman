@@ -31,7 +31,7 @@ function [s] = train_nonLinear(NSamples,dt)
         s.X(3,i) = -sin(s.X(1,i-1));        
     end
 
-    % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
+    % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0];
     [s.NStateOut, ~] = size(s.H);
     

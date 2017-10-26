@@ -46,7 +46,7 @@ function [s] = sprungBlocks(NSamples,dt)
         s.X(:,i) = s.F*s.X(:,i-1);
     end
 
-    % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
+    % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0 0 0 0];
     [s.NStateOut, ~] = size(s.H);
     

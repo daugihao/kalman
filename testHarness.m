@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 4;
+env = 1;
 NSamples=1000;
 dt = 0.01;
 
