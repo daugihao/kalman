@@ -32,7 +32,10 @@ function [s] = train_nonLinear(NSamples,dt)
     end
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise
+    s.H = [1 0 0];
+    [s.NStateOut, ~] = size(s.H);
+    
     s.sigma_meas = 1;
-    s.Y = s.X(1,:)+s.sigma_meas*randn(size(s.t));
+    s.Y = s.H*s.X + s.sigma_meas*randn(s.NStateOut,length(s.t));
 
 end
