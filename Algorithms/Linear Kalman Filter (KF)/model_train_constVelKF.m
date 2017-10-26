@@ -7,7 +7,7 @@ d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)
 d.X(:,1) = [0; 
-    0.5*s.X(2,1)];
+    s.X(2,1)];
 
 % Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
@@ -20,7 +20,7 @@ d.F = [1 dt;
 % be trusted (it represents the level of error associated with that
 % measurement).
 d.P = [1e-9             0;
-                 0 5^2];
+                 0 1e-9];
 d.P1 = zeros(size(d.P));
 
 % Q is the process noise covariance. It represents the amount of

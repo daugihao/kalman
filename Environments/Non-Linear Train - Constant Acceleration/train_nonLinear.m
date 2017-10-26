@@ -24,12 +24,11 @@ function [s] = train_nonLinear(NSamples,dt)
     s.X(2,1) = 5;
     % Acceleration vector (state 3)
     s.X(3,1) = -cos(s.X(1,1));
-
-    syms x1 x2 x3
-    s.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
     
     for i = 2:NSamples+1
-        s.X(:,i) = subs(s.J,s.X(1,i-1))*s.X(:,i-1);
+        s.X(1,i) = s.X(1,i-1) + s.X(2,i-1)*dt;
+        s.X(2,i) = s.X(2,i-1) + s.X(3,i-1)*dt;
+        s.X(3,i) = -sin(s.X(1,i-1));        
     end
 
     % Z is the measurement vector. In our case, Z = TrueData + RandomGaussianNoise

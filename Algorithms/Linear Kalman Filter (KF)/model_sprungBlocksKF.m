@@ -8,7 +8,7 @@ d.X = zeros(s.NState,length(s.t));
 % Previous state (initial guess)
 d.X(:,1) = [0; 
     0;
-    1.1;
+    1;
     1;
     0;
     -1];

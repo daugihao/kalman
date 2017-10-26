@@ -41,8 +41,8 @@ elseif strcmp(d.typeString,'Extended KF')
         % Compute the Jacobian to obtain the linearised state transition matrix
         d.F = double(subs(d.J,d.X(1,k-1)));
         
-        % Compute the predicted mean, d.X1
-        d.X1 = d.F * d.X(:,k-1);
+        % Compute the predicted mean with the non-linear model equations, d.X1
+        d.X1 = d.meancalc(d.X(:,k-1),dt);
         % Compute the predicted covariance matrix, d.P1
         d.P1 = (d.F * d.P * d.F') + d.Q;
 
