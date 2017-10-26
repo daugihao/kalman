@@ -10,16 +10,16 @@ d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)
 d.X(:,1) = [1; 
-    5.0;
+    5.2;
     -cos(1)];
 
 % The error matrix (or the confidence matrix): P gives the confidence in
 % the initial estimate. A low value indicates that the initial state should
 % be trusted (it represents the level of error associated with that
 % measurement).
-d.P = [1e-6 0 0;
-       0 1e-6 0;
-         0 0 1e-6];
+d.P = [1e-7 0 0;
+       0 0.2^2 0;
+         0 0 1e-7];
 
 % Q is the process noise covariance. It represents the amount of
 % uncertainty in the model. In our case, we arbitrarily assume that the model is perfect (no
