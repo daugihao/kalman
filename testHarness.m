@@ -2,9 +2,9 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
-NSamples=1000;
-dt = 0.01;
+env = 6;
+NSamples=100;
+dt = 1;
 
 %% Ground Truth & Model %%%%%%%%%%%%%%%
 switch env
@@ -23,12 +23,46 @@ switch env
     case 5
         s = train_nonLinear(NSamples,dt);
         d = model_train_nonLinearUKF(s,dt);
+    case 6
+        s = train_constVel(NSamples,dt);
+        d = model_train_constVelPMF(s,dt);
     otherwise
         error(['Selected environment number does not exist: ' num2str(env) '!']);
 end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
-if strcmp(d.typeString,'Unscented KF')
+if strcmp(d.typeString,'Point Mass Filter')
+    for k = 2:NSamples+1
+%         disp(k)
+%         % Compute the weights for prediction density
+%         for i = 1:length(d.w)
+%             d.w1(i) = 0;
+%             for j = 1:length(d.w)
+%                 meanEst = d.stateTrans(d.x(j,:)',dt);
+%                 d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.X(:,k),meanEst');
+%             end
+%         end
+        d.w1 = d.w;
+        scatter(d.x(:,1),d.x(:,2),36,d.w1);
+        drawnow;
+        % Compute the weights for posterior PDF
+        for i = 1:length(d.w)
+            den = 0;
+            measEst = d.H*d.x(i,:)';
+            num = d.w1(i)*d.measModel(s.Y(:,k),measEst');
+            for j = 1:length(d.w)
+                measEst = d.H*d.x(j,:)';
+                den = den + d.w1(j)*d.measModel(s.Y(:,k),measEst');
+            end
+            d.w(i) = num/den;
+        end
+        d.wprev = d.w;
+        % Compute a state estimate
+        d.X(:,k) = sum(d.w.*d.x);
+        scatter(d.x(:,1),d.x(:,2),36,d.w);
+        drawnow;
+    end
+elseif strcmp(d.typeString,'Unscented KF')
     d.Xpred = zeros(size(d.X));
     for k=2:NSamples+1
         % UKF prediction step
