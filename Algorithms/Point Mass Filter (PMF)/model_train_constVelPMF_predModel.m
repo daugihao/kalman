@@ -2,7 +2,7 @@ function [p] = model_train_constVelPMF_predModel(x,meanEst)
     
     %% Set up Gaussian parameters
     % Standard deviation
-    sigmax = 0.01; sigmay = 0.1;
+    sigmax = 0.1; sigmay = 0.1;
     
     %% Difference between grid point and estimated state
     difference = x-meanEst;

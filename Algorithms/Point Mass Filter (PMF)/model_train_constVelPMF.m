@@ -25,8 +25,7 @@ function [d] = model_train_constVelPMF(s,dt)
     d.w = zeros(d.grid.discret1*d.grid.discret2,1);
     d.w(106) = 1;
     d.w1 = d.w;
-    
-    d.wprev = ones(size(d.w))./(d.grid.discret1*d.grid.discret2);
+    d.wprev = d.w;
     
     %% State estimate initialisation
     d.X = zeros(s.NState,length(s.t));
@@ -39,6 +38,5 @@ function [d] = model_train_constVelPMF(s,dt)
     d.predModel = @model_train_constVelPMF_predModel;
     d.measModel = @model_train_constVelPMF_measModel;
     d.stateTrans = @model_train_constVelPMF_stateTrans;
-    
 
 end

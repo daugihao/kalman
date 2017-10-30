@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
+env = 6;
 NSamples=100;
 dt = 0.001;
 
@@ -37,7 +37,8 @@ if strcmp(d.typeString,'Point Mass Filter')
         for i = 1:length(d.w)
             d.w1(i) = 0;
             for j = 1:length(d.w)
-                d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.x(i,:),d.x(j,:));
+                predEst = d.stateTrans(d.x(j,:)',dt);
+                d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.x(i,:),predEst');
             end
         end
         scatter(d.x(:,1),d.x(:,2),36,d.w1,'LineWidth',4);
