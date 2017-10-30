@@ -2,9 +2,9 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 6;
+env = 7;
 NSamples=100;
-dt = 0.001;
+dt = 0.01;
 
 %% Ground Truth & Model %%%%%%%%%%%%%%%
 switch env
@@ -26,12 +26,17 @@ switch env
     case 6
         s = train_constVel(NSamples,dt);
         d = model_train_constVelPMF(s,dt);
+    case 7
+        s = train_circular(NSamples,dt);
+        d = model_train_circularPMF(s,dt);
     otherwise
         error(['Selected environment number does not exist: ' num2str(env) '!']);
 end
 
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
-if strcmp(d.typeString,'Point Mass Filter')
+if strcmp(d.typeString,'Particle Filter')
+    error('Algorithm not yet implemented!');
+elseif strcmp(d.typeString,'Point Mass Filter')
     for k = 2:NSamples+1
         % Compute the weights for prediction density
         for i = 1:length(d.w)
