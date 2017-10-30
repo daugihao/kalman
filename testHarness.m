@@ -2,9 +2,9 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 6;
+env = 1;
 NSamples=100;
-dt = 1;
+dt = 0.001;
 
 %% Ground Truth & Model %%%%%%%%%%%%%%%
 switch env
@@ -33,17 +33,14 @@ end
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 if strcmp(d.typeString,'Point Mass Filter')
     for k = 2:NSamples+1
-%         disp(k)
-%         % Compute the weights for prediction density
-%         for i = 1:length(d.w)
-%             d.w1(i) = 0;
-%             for j = 1:length(d.w)
-%                 meanEst = d.stateTrans(d.x(j,:)',dt);
-%                 d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.X(:,k),meanEst');
-%             end
-%         end
-        d.w1 = d.w;
-        scatter(d.x(:,1),d.x(:,2),36,d.w1);
+        % Compute the weights for prediction density
+        for i = 1:length(d.w)
+            d.w1(i) = 0;
+            for j = 1:length(d.w)
+                d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.x(i,:),d.x(j,:));
+            end
+        end
+        scatter(d.x(:,1),d.x(:,2),36,d.w1,'LineWidth',4);
         drawnow;
         % Compute the weights for posterior PDF
         for i = 1:length(d.w)
@@ -54,12 +51,16 @@ if strcmp(d.typeString,'Point Mass Filter')
                 measEst = d.H*d.x(j,:)';
                 den = den + d.w1(j)*d.measModel(s.Y(:,k),measEst');
             end
-            d.w(i) = num/den;
+            if isnan(num/den)
+                d.w(i) = 0;
+            else
+                d.w(i) = num/den;
+            end
         end
         d.wprev = d.w;
         % Compute a state estimate
         d.X(:,k) = sum(d.w.*d.x);
-        scatter(d.x(:,1),d.x(:,2),36,d.w);
+        scatter(d.x(:,1),d.x(:,2),36,d.w,'LineWidth',4);
         drawnow;
     end
 elseif strcmp(d.typeString,'Unscented KF')

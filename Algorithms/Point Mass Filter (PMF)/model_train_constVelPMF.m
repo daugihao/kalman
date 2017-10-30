@@ -4,10 +4,10 @@ function [d] = model_train_constVelPMF(s,dt)
     d.typeString = 'Point Mass Filter';
 
     %% Select grid points, x^i
-    d.grid.range1 = [-1 10];
+    d.grid.range1 = [-0.01 0.1];
     d.grid.discret1 = 30;
     d.grid.step1 = (d.grid.range1(2)-d.grid.range1(1))/(d.grid.discret1-1);
-    d.grid.range2 = [8 12];
+    d.grid.range2 = [9 11];
     d.grid.discret2 = 30;
     d.grid.step2 = (d.grid.range2(2)-d.grid.range2(1))/(d.grid.discret2-1);
     
@@ -24,14 +24,12 @@ function [d] = model_train_constVelPMF(s,dt)
     %% Initialise grid weightings, w^i
     d.w = zeros(d.grid.discret1*d.grid.discret2,1);
     d.w(106) = 1;
-    
-    d.wprev = d.w;
     d.w1 = d.w;
+    
+    d.wprev = ones(size(d.w))./(d.grid.discret1*d.grid.discret2);
     
     %% State estimate initialisation
     d.X = zeros(s.NState,length(s.t));
-    disp(size(d.w))
-    disp(size(d.x))
     d.X(1:s.NState,1) = sum(d.w.*d.x);
     
     %% Measurement matrix

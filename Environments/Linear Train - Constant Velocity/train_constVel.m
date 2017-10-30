@@ -20,19 +20,12 @@ function [s] = train_constVel(NSamples,dt)
     s.X(2,:) = 10*ones(size(s.t));
     % Position vector (state 1)
     s.X(1,:) = s.X(2,:).*s.t;
-    
-    % U is the input disturbance vector.
-    s.B = [0 0]';
-    [s.NStateIn, ~] = size(s.B);
-    
-    s.sigma_cont = 0.00;
-    s.X = s.X + (s.B.*s.X + s.sigma_cont*randn(s.NStateIn,length(s.t)) + 0.01);
 
     % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0];
     [s.NStateOut, ~] = size(s.H);
     
-    s.sigma_meas = 1;
+    s.sigma_meas = 0.01;
     s.Y = s.H*s.X + s.sigma_meas*randn(s.NStateOut,length(s.t));
 
 end
