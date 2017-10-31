@@ -70,7 +70,7 @@ if strcmp(d.typeString,'Particle Filter')
         scatter(d.x(:,1),d.x(:,2),36,d.w,'LineWidth',4);
         drawnow;
     end
-elseif strcmp(d.typeString,'Point Mass Filter')
+elseif strcmp(d.typeString,'Point Mass Filter') % RUNS SO SLOWLY, SO DISPLAYING EACH STEP
     for k = 2:NSamples+1
         % Compute the weights for prediction density
         for i = 1:length(d.w)
