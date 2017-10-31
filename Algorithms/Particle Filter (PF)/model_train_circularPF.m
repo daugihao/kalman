@@ -8,7 +8,7 @@ function [d] = model_train_circularPF(s,dt)
     d.X(1:s.NState,1) = [1.1; 0];
     
     %% Select sample points, x^i
-    d.samples.number = 50;   
+    d.samples.number = 200;   
     d.x = zeros(d.samples.number,s.NState);
 
     %% Initialisation of sample point weightings
@@ -18,7 +18,8 @@ function [d] = model_train_circularPF(s,dt)
         end
     end
     
-    d.w = zeros(d.samples.number,1);
+    d.e = zeros(d.samples.number,1);
+    d.w = ones(size(d.e))./d.samples.number;
     d.wprev = ones(size(d.w))./d.samples.number;
     
     %% Measurement matrix

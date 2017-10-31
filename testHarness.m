@@ -39,35 +39,33 @@ end
 %% Kalman iteration %%%%%%%%%%%%%%%%%%%
 if strcmp(d.typeString,'Particle Filter')
     for k = 2:NSamples+1
-        % Compute the weights for prediction density
-        for i = 1:length(d.w)
-            d.w1(i) = 0;
-            for j = 1:length(d.w)
-                predEst = d.stateTrans(d.x(j,:)',dt);
-                d.w1(i) = d.w1(i) + d.wprev(j)*d.predModel(d.x(i,:),predEst');
-            end
+        % Resample points
+        for i = 1:length(d.x)
+            test = discretesample(d.wprev,d.samples.number);
+            d.x(i,:) = d.x(test(i),:);
+            d.wprev(i) = d.w(test(i));
         end
-        scatter(d.x(:,1),d.x(:,2),36,d.w1,'LineWidth',4);
-        drawnow;
-        % Compute the weights for posterior PDF
-        for i = 1:length(d.w)
-            den = 0;
+        for i = 1:length(d.x)
+            % Compute the sample object state
+            predEst = d.stateTrans(d.x(i,:)',dt);
+            d.x(i,:) = d.predModel(predEst');
+            % Compute the weight update
             measEst = d.H*d.x(i,:)';
-            num = d.w1(i)*d.measModel(s.Y(:,k),measEst');
-            for j = 1:length(d.w)
-                measEst = d.H*d.x(j,:)';
-                den = den + d.w1(j)*d.measModel(s.Y(:,k),measEst');
-            end
-            if isnan(num/den)
-                d.w(i) = 0;
-            else
-                d.w(i) = num/den;
-            end
+            d.e(i) = d.measModel(s.Y(:,k),measEst');
         end
-        d.wprev = d.w;
+        % Compute the updated weights
+        d.w = (d.wprev.*d.e)./(d.wprev'*d.e);
         % Compute a state estimate
         d.X(:,k) = sum(d.w.*d.x);
-        scatter(d.x(:,1),d.x(:,2),36,d.w,'LineWidth',4);
+        % Store the weightings for the next time step
+        d.wprev = d.w;
+        
+        % Display
+        scatter(d.x(:,1),d.x(:,2),36,d.w,'LineWidth',1);
+        axis equal
+        xlim([-2 2]);
+        ylim([-2 2]);
+        grid on;
         drawnow;
     end
 elseif strcmp(d.typeString,'Point Mass Filter') % RUNS SO SLOWLY, SO DISPLAYING EACH STEP

@@ -1,15 +1,12 @@
-function [p] = model_train_circularPF_predModel(x,meanEst)
+function [p] = model_train_circularPF_predModel(meanEst)
     
     %% Set up Gaussian parameters
     % Standard deviation
-    sigmax = 0.3; sigmay = 0.3;
+    sigmax = 0.1; sigmay = 0.1;
     
-    %% Difference between grid point and estimated state
-    difference = x-meanEst;
+    p = zeros(size(meanEst));
     
-    Comp1 = difference(1)^2 / (2*sigmax^2);
-    Comp2 = difference(2)^2 / (2*sigmay^2);
-    
-    p = exp(-(Comp1 + Comp2));
+    p(1) = meanEst(1) + sigmax*randn;
+    p(2) = meanEst(2) + sigmay*randn;
 
 end
