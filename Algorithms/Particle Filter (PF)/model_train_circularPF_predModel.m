@@ -2,7 +2,7 @@ function [p] = model_train_circularPF_predModel(meanEst)
     
     %% Set up Gaussian parameters
     % Standard deviation
-    sigmax = 0.1; sigmay = 0.1;
+    sigmax = 0.01; sigmay = 0.01;
     
     p = zeros(size(meanEst));
     

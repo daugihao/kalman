@@ -7,7 +7,7 @@ d.X = zeros(s.NState,length(s.t));
 
 % Previous state (initial guess)
 d.X(:,1) = [0; 
-    s.X(2,1)];
+    5];
 
 % Motion equation: X = F*X_prev + Noise, that is X(n) = X(n-1) + V(n-1) * dt
 % Of course, V is not measured, but it is estimated
@@ -19,8 +19,8 @@ d.F = [1 dt;
 % the initial estimate. A low value indicates that the initial state should
 % be trusted (it represents the level of error associated with that
 % measurement).
-d.P = [1e-9             0;
-                 0 1e-9];
+d.P = [0             0;
+                 0 5^2];
 d.P1 = zeros(size(d.P));
 
 % Q is the process noise covariance. It represents the amount of
@@ -28,7 +28,7 @@ d.P1 = zeros(size(d.P));
 % acceleration allowed for the train, or in other words - any acceleration
 % is considered to be a noise). The elements represent variance magnitude.
 d.Q = [0 0;
-     0 0];
+     0 s.sigma_proc^2];
 
 % H is the measurement matrix. 
 % We measure X, so H(1) = 1

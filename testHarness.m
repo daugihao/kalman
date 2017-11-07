@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 8;
+env = 1;
 NSamples=100;
 dt = 0.01;
 
@@ -156,7 +156,7 @@ end
 
 %% Plot resulting graphs %%%%%%%%%%%%%%
 for i = 1:s.NState
-    figure;
+	subplot(1,2,i);
     plot(s.t,s.X(i,:),'m');
     hold on; grid on;
     plot(s.t,d.X(i,:),'k');
