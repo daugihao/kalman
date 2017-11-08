@@ -24,9 +24,7 @@ d.P = [0             0;
 d.P1 = zeros(size(d.P));
 
 % Q is the process noise covariance. It represents the amount of
-% uncertainty in the model. In our case, we arbitrarily assume that the model is perfect (no
-% acceleration allowed for the train, or in other words - any acceleration
-% is considered to be a noise). The elements represent variance magnitude.
+% uncertainty in the model. The elements represent variance magnitude.
 d.Q = [0 0;
      0 s.sigma_proc^2];
 
