@@ -1,6 +1,6 @@
 function y = model_train_nonLinearEKFequation(x,dt)
 %Will Reynolds 24/10/2017
-%UKF non-linear equations for non-linear train model
+%EKF non-linear equations for non-linear train model
 y = zeros(size(x));
 
 y(1) = x(1) + x(2)*dt;

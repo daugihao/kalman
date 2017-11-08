@@ -3,8 +3,10 @@ function [s] = train_constAcc(NSamples,dt)
 % Model has a constant acceleration dynamic
 
 %s.X = [ position;
-%       velocity];
+%       velocity;
+%       acceleration];
 
+    %% General Information
     s.modelString = 'train_constAcc';
 
     s.t=(0:dt:dt*NSamples);
@@ -15,6 +17,7 @@ function [s] = train_constAcc(NSamples,dt)
     s.stateString{3} = 'Acceleration (m/s^2)';
     s.NState = length(s.stateString);
     
+    %% State Information 
     % Initialise the state array
     s.X = zeros(s.NState,length(s.t));
     % Acceleration vector (state 3)
@@ -27,6 +30,7 @@ function [s] = train_constAcc(NSamples,dt)
         s.X(1,i) = s.X(1,i-1) + s.X(2,i)*dt;
     end
 
+    %% Measurement Information
     % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0];
     [s.NStateOut, ~] = size(s.H);

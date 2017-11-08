@@ -3,8 +3,10 @@ function [s] = train_nonLinear(NSamples,dt)
 % Model has a non-linear acceleration dynamic
 
 %s.X = [ position;
-%       velocity];
+%       velocity;
+%       acceleration];
 
+    %% General Information
     s.modelString = 'train_nonLinear';
 
     s.t=(0:dt:dt*NSamples);
@@ -15,22 +17,25 @@ function [s] = train_nonLinear(NSamples,dt)
     s.stateString{3} = 'Acceleration (m/s^2)';
     s.NState = length(s.stateString);
     
+    %% State Information 
+    % Define process noise variance
+    s.sigma_proc = 0.01;
     % Initialise the state array
     s.X = zeros(s.NState,length(s.t));
-    
     % Position vector (state 1)
     s.X(1,1) = 1;
     % Velocity vector (state 2)
     s.X(2,1) = 5;
     % Acceleration vector (state 3)
-    s.X(3,1) = -cos(s.X(1,1));
+    s.X(3,1) = -cos(s.X(1,1)) + s.sigma_proc*randn(1,1);
     
     for i = 2:NSamples+1
         s.X(1,i) = s.X(1,i-1) + s.X(2,i-1)*dt;
         s.X(2,i) = s.X(2,i-1) + s.X(3,i-1)*dt;
-        s.X(3,i) = -sin(s.X(1,i-1));        
+        s.X(3,i) = -sin(s.X(1,i-1)) + s.sigma_proc*randn(1,1);        
     end
 
+    %% Measurement Information
     % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0];
     [s.NStateOut, ~] = size(s.H);

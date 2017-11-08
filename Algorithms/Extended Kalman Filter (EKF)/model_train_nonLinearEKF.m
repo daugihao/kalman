@@ -15,7 +15,7 @@ d.X(:,1) = [1;
 % F represents the dynamics of the system: it is the motion equation
 syms x1 x2 x3
 d.J = jacobian([x1 + x2*dt, x2 + x3*dt, -sin(x1)], [x1, x2, x3]);
-d.meancalc = @model_train_nonLinearEKFequation;
+d.predCalc = @model_train_nonLinearEKFequation;
 
 % The error matrix (or the confidence matrix): P gives the confidence in
 % the initial estimate. A low value indicates that the initial state should
@@ -32,12 +32,14 @@ d.P1 = zeros(size(d.P));
 % is considered to be a noise). The elements represent variance magnitude.
 d.Q = [0 0 0;
      0 0 0;
-     0 0 0];
+     0 0 0.01^2];
 
 % H is the measurement matrix. 
 % We measure X, so H(1) = 1
 % We do not measure V, so H(2)= 0
-d.H = [1 0 0];
+syms X1 X2 X3
+d.L = jacobian([X1, 0, 0], [X1])';
+d.measCalc = @measurement_train_nonLinearEKFequation;
 
 % R is the measurement noise covariance. Generally R and sigma_meas can
 % vary between samples. The elements represent variance magnitude.

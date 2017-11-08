@@ -2,7 +2,7 @@ close all
 clear
 
 %% Set General Parameters %%%%%%%%%%%%%
-env = 1;
+env = 4;
 NSamples=100;
 dt = 0.01;
 
@@ -115,12 +115,15 @@ elseif strcmp(d.typeString,'Extended KF')
         d.F = double(subs(d.J,d.X(1,k-1)));
         
         % Compute the predicted mean with the non-linear model equations, d.X1
-        d.X1 = d.meancalc(d.X(:,k-1),dt);
+        d.X1 = d.predCalc(d.X(:,k-1),dt);
         % Compute the predicted covariance matrix, d.P1
         d.P1 = (d.F * d.P * d.F') + d.Q;
 
+        % Compute the Jacobian to obtain the linearised measurement matrix
+        d.H = double(subs(d.L,d.X(1,k-1)));
+        
         % Compute the predicted measurement, d.Y1
-        d.Y1 = d.H * d.X1;
+        d.Y1 = d.measCalc(d.X1,dt);
         % Compute the innovation covariance matrix, d.S
         S = (d.H * d.P1 * d.H') + d.R;
         % Compute the Kalman gain (K large -> more weight goes to measurement)
@@ -156,7 +159,7 @@ end
 
 %% Plot resulting graphs %%%%%%%%%%%%%%
 for i = 1:s.NState
-	subplot(1,2,i);
+    figure
     plot(s.t,s.X(i,:),'m');
     hold on; grid on;
     plot(s.t,d.X(i,:),'k');

@@ -8,6 +8,7 @@ function [s] = sprungBlocks(NSamples,dt)
 %       velocity_2;
 %       acceleration_2];
 
+    %% General Information
     s.modelString = 'sprungBlocks';
 
     s.t=(0:dt:dt*NSamples);
@@ -25,6 +26,7 @@ function [s] = sprungBlocks(NSamples,dt)
     k = 1; % Spring stiffness, N/m
     m = 1; % Carriages masses, kg
     
+    %% State Information 
     % Initialise the state array
     s.X = zeros(s.NState,length(s.t));
     
@@ -46,6 +48,7 @@ function [s] = sprungBlocks(NSamples,dt)
         s.X(:,i) = s.F*s.X(:,i-1);
     end
 
+    %% Measurement Information
     % Y is the measurement vector. In our case, Y = TrueData + RandomGaussianNoise
     s.H = [1 0 0 0 0 0];
     [s.NStateOut, ~] = size(s.H);
