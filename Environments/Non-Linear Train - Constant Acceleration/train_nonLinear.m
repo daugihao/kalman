@@ -27,7 +27,7 @@ function [s] = train_nonLinear(NSamples,dt)
     % Velocity vector (state 2)
     s.X(2,1) = 5;
     % Acceleration vector (state 3)
-    s.X(3,1) = -cos(s.X(1,1)) + s.sigma_proc*randn(1,1);
+    s.X(3,1) = -sin(s.X(1,1)) + s.sigma_proc*randn(1,1);
     
     for i = 2:NSamples+1
         s.X(1,i) = s.X(1,i-1) + s.X(2,i-1)*dt;
@@ -40,7 +40,7 @@ function [s] = train_nonLinear(NSamples,dt)
     s.H = [1 0 0];
     [s.NStateOut, ~] = size(s.H);
     
-    s.sigma_meas = 1;
+    s.sigma_meas = 0.1;
     s.Y = s.H*s.X + s.sigma_meas*randn(s.NStateOut,length(s.t));
 
 end
